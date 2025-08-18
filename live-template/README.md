@@ -168,7 +168,7 @@ public org.springframework.boot.web.servlet.FilterRegistrationBean simpleCorsFil
     org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
     org.springframework.web.cors.CorsConfiguration config = new org.springframework.web.cors.CorsConfiguration();
     config.setAllowCredentials(true);
-    config.setAllowedOrigins(java.util.Collections.singletonList("http://localhost:4200"));
+    config.setAllowedOrigins(java.util.Collections.singletonList("*"));
     config.setAllowedMethods(java.util.Collections.singletonList("*"));
     config.setAllowedHeaders(java.util.Collections.singletonList("*"));
     source.registerCorsConfiguration("/**", config);
@@ -219,22 +219,25 @@ static void configureProperties(org.springframework.test.context.DynamicProperty
 }
 ```
 
-10. `boot-datasource-postgres-yml` - Spring Boot DataSource and JPA Properties
+## Yaml
 
-```properties
-spring.datasource.url: jdbc:postgresql://localhost:5432/postgres
-spring.datasource.username: postgres
-spring.datasource.password: postgres
-```
-11. `boot-datasource-mysql-yml` - Spring Boot DataSource and JPA Properties
+1. `mysql-datasource-yml` - MySql DataSource config for yaml
 
-```properties
-spring.datasource.url: jdbc:mysql://localhost:3306/test
-spring.datasource.username: root
-spring.datasource.password: 
-```
-
-
+```yaml
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost.:3306/$database$?connectTimeout=60000&socketTimeout=60000&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: 
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      minimum-idle: 16
+      maximum-pool-size: 16
+      connection-timeout: 30000 #等待连接池分配连接的最大时长，默认30秒
+      connection-test-query: 'SELECT 1'
+      idle-timeout: 12000 #最大连接数和最小连接数不等时有效
+ ```
 
 ## Testcontainers
 
@@ -255,37 +258,15 @@ static org.testcontainers.containers.PostgreSQLContainer<?> postgres =
         new org.testcontainers.containers.PostgreSQLContainer<>("postgres:17");
 ```
 
-## SQL
-
-1. `flyway-table` - Flyway table creation script
-
-```sql
-create sequence if not exists $table$_id_seq start with 1 increment by 50;
-
-create table if not exists $table$ (
-    id bigint DEFAULT nextval('$table$_id_seq') not null,
-    created_at timestamp,
-    updated_at timestamp,
-    primary key (id)
-);
-```
-
-2. `mysql-create`
-
-```sql
-```
-
-
-
 ## Maven
 
-1. `jib-maven-plugin` - Add Jib Maven Plugin
+1. `maven-jib-plugin` - Add Jib Maven Plugin
 
 ```xml
 <plugin>
     <groupId>com.google.cloud.tools</groupId>
     <artifactId>jib-maven-plugin</artifactId>
-    <version>3.2.1</version>
+    <version>3.4.4</version>
     <configuration>
         <from>
             <image>eclipse-temurin:21-jre-jammy</image>
@@ -306,7 +287,7 @@ create table if not exists $table$ (
 </plugin>
 ```
 
-2. `git-commit-id-maven-plugin` - Adds git-commit-id-maven-plugin
+2. `maven-git-commit-id-plugin` - Adds git-commit-id-maven-plugin
 
 ```xml
 <plugin>
@@ -334,13 +315,13 @@ create table if not exists $table$ (
 </plugin>
 ```
 
-3. `spotless-maven-plugin` - Adds spotless-maven-plugin
+3. `maven-spotless-plugin` - Adds spotless-maven-plugin
 
 ```xml
 <plugin>
     <groupId>com.diffplug.spotless</groupId>
     <artifactId>spotless-maven-plugin</artifactId>
-    <version>2.43.0</version>
+    <version>2.44.2</version>
     <configuration>
         <java>
             <importOrder />
@@ -362,106 +343,54 @@ create table if not exists $table$ (
 </plugin>
 ```
 
-4. `jacoco-maven-plugin`
+4. `maven-jacoco-plugin`
 
 ```xml
 <plugin>
-  <groupId>org.jacoco</groupId>
-  <artifactId>jacoco-maven-plugin</artifactId>
-  <version>0.8.12</version>
-  <configuration>
-    <rules>
-      <rule>
-        <element>BUNDLE</element>
-        <limits>
-          <limit>
-            <counter>COMPLEXITY</counter>
-            <value>COVEREDRATIO</value>
-            <minimum>${jacoco.minimum.coverage}</minimum>
-          </limit>
-        </limits>
-      </rule>
-    </rules>
-    <excludes>
-      <exclude>**/exception/*</exclude>
-    </excludes>
-  </configuration>
-  <executions>
-    <execution>
-      <id>pre-unit-tests</id>
-      <goals>
-        <goal>prepare-agent</goal>
-      </goals>
-    </execution>
-    <!-- Ensures that the code coverage report for unit tests is created after unit tests have been run -->
-    <execution>
-      <id>post-unit-test</id>
-      <phase>test</phase>
-      <goals>
-        <goal>report</goal>
-      </goals>
-    </execution>
-    <execution>
-      <id>pre-integration-tests</id>
-      <goals>
-        <goal>prepare-agent-integration</goal>
-      </goals>
-    </execution>
-    <!-- Ensures that the code coverage report for integration tests is created after integration tests have been run -->
-    <execution>
-      <id>post-integration-tests</id>
-      <phase>post-integration-test</phase>
-      <goals>
-        <goal>report-integration</goal>
-      </goals>
-    </execution>
-  </executions>
+    <groupId>org.jacoco</groupId>
+    <artifactId>jacoco-maven-plugin</artifactId>
+    <version>0.8.13</version>
+    <executions>
+        <!-- Run JaCoCo after tests -->
+        <execution>
+            <id>prepare-agent</id>
+            <goals>
+                <goal>prepare-agent</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>report</id>
+            <phase>verify</phase>
+            <goals>
+                <goal>report</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>check</id>
+            <phase>verify</phase>
+            <goals>
+                <goal>check</goal>
+            </goals>
+            <configuration>
+                <rules>
+                    <rule>
+                        <element>BUNDLE</element>
+                        <limits>
+                            <limit>
+                                <counter>LINE</counter>
+                                <value>COVEREDRATIO</value>
+                                <minimum>${jacoco.minimum.coverage}</minimum>
+                            </limit>
+                        </limits>
+                    </rule>
+                </rules>
+            </configuration>
+        </execution>
+    </executions>
 </plugin>
 ```
 
-5. `spring-boot-maven-plugin-docker`
-
-```xml
-<plugin>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-maven-plugin</artifactId>
-  <executions>
-    <execution>
-      <goals>
-        <goal>build-info</goal>
-      </goals>
-    </execution>
-  </executions>
-  <configuration>
-    <!--
-    mvn spring-boot:build-image \
-    -Dspring-boot.build-image.imageName=xx \
-    -Dspring-boot.build-image.builder=paketobuildpacks/builder-jammy-full \
-    -Dspring-boot.build-image.publish=true
-    -->
-    <image>
-      <name>${env.USER}/${project.artifactId}</name>
-      <!-- 该镜像包含 curl -->
-      <builder>paketobuildpacks/builder-jammy-full</builder>
-      <env>
-        <!-- Make sure `mvn spring-boot:build-image` uses the Java version defined in this project -->
-        <BP_JVM_VERSION>${java.version}</BP_JVM_VERSION>
-      </env>
-    </image>
-    <docker>
-      <publishRegistry>
-        <username>${docker.publishRegistry.username}</username>
-        <password>${docker.publishRegistry.password}</password>
-      </publishRegistry>
-    </docker>
-    <additionalProperties>
-      <java.version>${java.version}</java.version>
-    </additionalProperties>
-  </configuration>
-</plugin>
-```
-
-6. `maven-compiler-plugin-springdoc`
+5. `maven-compiler-plugin-springdoc`
 
 ```xml
 <plugin>
@@ -488,25 +417,25 @@ create table if not exists $table$ (
 
 ## Docker
 
-1. `dockerfile.layered` - Creates multistage Dockerfile for Spring Boot application
+1. `dockerfile-boot` - Creates multistage Dockerfile for Spring Boot application
 
 ```dockerfile
-FROM eclipse-temurin:21-jre-jammy AS builder
-WORKDIR /build
+FROM eclipse-temurin:21-jre AS builder
+WORKDIR /app
 ADD target/*.jar app.jar
 RUN java -Djarmode=layertools -jar app.jar extract
 
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=builder /build/dependencies/ ./
-COPY --from=builder /build/spring-boot-loader/ ./
-COPY --from=builder /build/snapshot-dependencies/ ./
-COPY --from=builder /build/application/ ./
+COPY --from=builder app/dependencies/ ./
+COPY --from=builder app/spring-boot-loader/ ./
+COPY --from=builder app/snapshot-dependencies/ ./
+COPY --from=builder app/application/ ./
 EXPOSE 8080
 ENTRYPOINT [ "java", "org.springframework.boot.loader.launch.JarLauncher" ]
 ```
 
-2. `dockerfile`
+2. `dockerfile-java`
 
 ```dockerfile
 FROM eclipse-temurin:21-jre-jammy
@@ -514,7 +443,7 @@ COPY target/*.jar app.jar
 ENTRYPOINT ["java","-jar","/app.jar"]
 ```
 
-2. `docker-compose-postgres` 
+2. `dc-postgres` 
 
 ```yaml
 postgres:
@@ -536,30 +465,33 @@ postgres:
     retries: 10
 ```
 
-3. `docker-compose-mysql` 
+3. `dc-mysql` 
 
 ```yaml
-mysql:
-  image: mysql:8
+ mysql:
+  image: mysql:9
+  restart: always
+  environment:
+    MYSQL_ROOT_HOST: '%'
+    MYSQL_DATABASE: $db$
+    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
   ports:
     - "3306:3306"
-  environment:
-    MYSQL_ROOT_PASSWORD: pass
-    MYSQL_DATABASE: $db$
-    MYSQL_USER: user
-    MYSQL_PASSWORD: pass
-  volumes:
-    - mysql:/var/lib/mysql
+  command:
+    --character-set-server=utf8mb4
+    --collation-server=utf8mb4_general_ci
+    --explicit_defaults_for_timestamp=true
+    --lower_case_table_names=1  
   healthcheck:
-    test: "/usr/bin/mysql --user=user --password=pass -e 'SHOW DATABASES;'"
+    test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-password}" ]
     interval: 5s
     timeout: 5s
     retries: 10
+  volumes:
+    - ./sql:/docker-entrypoint-initdb.d:ro  
 ```
 
-
-
-4. `docker-compose-mongodb` 
+4. `dc-mongodb` 
 
 ```yaml
 mongodb:
@@ -577,7 +509,7 @@ mongodb:
     retries: 10
 ```
 
-5. `docker-compose-redis` 
+5. `dc-redis` 
 
 ```yaml
 redis:
@@ -587,16 +519,14 @@ redis:
     REDIS_DISABLE_COMMANDS: FLUSHDB,FLUSHALL
   ports:
     - "6379:6379"
-  volumes:
-    - redis:/data
   healthcheck:
-    test: [ "CMD", "redis-cli","--raw", "incr","ping" ]
+    test: [ "CMD", "redis-cli", "ping" ]
     interval: 5s
     timeout: 5s
     retries: 10
 ```
 
-6. `docker-compose-rabbitmq` 
+6. `dc-rabbitmq` 
 
 ```yaml
 rabbitmq:
@@ -613,7 +543,7 @@ rabbitmq:
     retries: 10
 ```
 
-7. `docker-compose-kafka-zk` 
+7. `dc-kafka-zk` 
 
 ```yaml
 kafka:
@@ -641,7 +571,7 @@ zookeeper:
     ZOOKEEPER_TICK_TIME: 2000
 ```
 
-8. `docker-compose-zipkin`
+8. `dc-zipkin`
 
 ```yaml
 zipkin:
