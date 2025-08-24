@@ -1,16 +1,53 @@
-# idea ignore
+# IntelliJ IDEA
 .idea/
 *.ipr
 *.iml
 *.iws
+out/
 
-# temp ignore
+# Eclipse
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# VS Code
+.vscode/
+
+# Temporary files
 *.log
 *.cache
 *.diff
 *.patch
 *.tmp
+*.temp
 
-# system ignore
+# System files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+
+# Backup files
+*~
+*.backup
+*.bak
+
+# Export directory
+exported-templates/
+templates_backup_*.tar.gz
+
+# OS generated files
+*.pid
+*.seed
+*.pid.lock
