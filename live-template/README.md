@@ -514,7 +514,7 @@ COPY target/*.jar app.jar
 ENTRYPOINT ["java","-jar","/app.jar"]
 ```
 
-2. `docker-compose-postgres` 
+3. `docker-compose-postgres` 
 
 ```yaml
 postgres:
@@ -536,7 +536,7 @@ postgres:
     retries: 10
 ```
 
-3. `docker-compose-mysql` 
+4. `docker-compose-mysql` 
 
 ```yaml
 mysql:
@@ -557,9 +557,7 @@ mysql:
     retries: 10
 ```
 
-
-
-4. `docker-compose-mongodb` 
+5. `docker-compose-mongodb` 
 
 ```yaml
 mongodb:
@@ -577,7 +575,7 @@ mongodb:
     retries: 10
 ```
 
-5. `docker-compose-redis` 
+6. `docker-compose-redis` 
 
 ```yaml
 redis:
@@ -596,7 +594,7 @@ redis:
     retries: 10
 ```
 
-6. `docker-compose-rabbitmq` 
+7. `docker-compose-rabbitmq` 
 
 ```yaml
 rabbitmq:
@@ -613,7 +611,7 @@ rabbitmq:
     retries: 10
 ```
 
-7. `docker-compose-kafka-zk` 
+8. `docker-compose-kafka-zk` 
 
 ```yaml
 kafka:
@@ -641,7 +639,7 @@ zookeeper:
     ZOOKEEPER_TICK_TIME: 2000
 ```
 
-8. `docker-compose-zipkin`
+9. `docker-compose-zipkin`
 
 ```yaml
 zipkin:
@@ -657,3 +655,8 @@ zipkin:
     retries: 10
 ```
 
+
+
+## References
+
+- https://github.com/mraible/idea-live-templates
