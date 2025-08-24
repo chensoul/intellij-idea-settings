@@ -1,12 +1,64 @@
-# Intellij IDEA LiveTemplates
+# IntelliJ IDEA Live Templates - Detailed Documentation
 
-These are my custom [IntelliJ IDEA Live Templates](https://www.jetbrains.com/help/idea/using-live-templates.html) for Java that I am currently using.
+This document provides comprehensive documentation for all live templates included in this project. These templates are designed to speed up Java development, particularly with Spring Boot, JPA, Maven, and Docker.
 
-## Export and Import
+## 📋 Table of Contents
 
-You can import LiveTemplates by File -> Manage IDE Settings -> Import Settings -> Select settings.zip
+- [Installation](#installation)
+- [Usage](#usage)
+- [Java Templates](#java-templates)
+- [JPA Templates](#jpa-templates)
+- [Spring Boot Templates](#spring-boot-templates)
+- [Maven Templates](#maven-templates)
+- [Docker Templates](#docker-templates)
+- [Testcontainers Templates](#testcontainers-templates)
+- [SQL Templates](#sql-templates)
+- [Customization](#customization)
 
-You can export LiveTemplates by File -> Manage IDE Settings -> Export Settings -> Select Live Templates -> Ok
+## 🚀 Installation
+
+### Automatic Installation (Recommended)
+
+Use the provided installation script:
+
+```bash
+./install.sh
+```
+
+### Manual Installation
+
+1. **Import XML Files**:
+   - Go to `File` → `Manage IDE Settings` → `Import Settings`
+   - Select the XML files from the `templates/` directory
+   - Restart IntelliJ IDEA
+
+2. **Import from ZIP**:
+   - Go to `File` → `Manage IDE Settings` → `Import Settings`
+   - Select a settings ZIP file (if available)
+
+3. **Manual Copy**:
+   - Copy template definitions from this document
+   - Go to `File` → `Settings` → `Editor` → `Live Templates`
+   - Create new template groups and add templates manually
+
+## 💡 Usage
+
+After installation, use templates by typing the abbreviation followed by `Tab`:
+
+```
+log<Tab>          → Creates SLF4J logger
+boot-service<Tab> → Creates Spring Boot service class
+jpa-entity<Tab>   → Creates JPA entity
+```
+
+### Template Variables
+
+Many templates include variables that you can customize:
+- `$CLASS$` - Current class name (auto-filled)
+- `$entity$` - Entity name (user input required)
+- `$prefix$` - Configuration prefix (user input required)
+
+Press `Tab` to move between variables during template expansion.
 
 ## Java
 
@@ -254,28 +306,6 @@ spring.datasource.password:
 static org.testcontainers.containers.PostgreSQLContainer<?> postgres =
         new org.testcontainers.containers.PostgreSQLContainer<>("postgres:17");
 ```
-
-## SQL
-
-1. `flyway-table` - Flyway table creation script
-
-```sql
-create sequence if not exists $table$_id_seq start with 1 increment by 50;
-
-create table if not exists $table$ (
-    id bigint DEFAULT nextval('$table$_id_seq') not null,
-    created_at timestamp,
-    updated_at timestamp,
-    primary key (id)
-);
-```
-
-2. `mysql-create`
-
-```sql
-```
-
-
 
 ## Maven
 
@@ -654,8 +684,6 @@ zipkin:
     timeout: 5s
     retries: 10
 ```
-
-
 
 ## References
 
